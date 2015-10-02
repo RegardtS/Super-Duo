@@ -7,6 +7,6 @@
         android:orderInCategory="100"
         android:title="@string/about"
         app:showAsAction="never"
-        android:contentDescription="About menu popup"
+        android:contentDescription="@string/about_menu_description"
         />
 </menu>

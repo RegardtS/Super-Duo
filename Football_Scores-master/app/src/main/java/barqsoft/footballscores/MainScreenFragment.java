@@ -25,10 +25,9 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
     public static final int SCORES_LOADER = 0;
     private String[] fragmentdate = new String[1];
     private int last_selected_item = -1;
-    TextView tv;
+    private TextView tv = null;
 
-    public MainScreenFragment() {
-    }
+    public MainScreenFragment() {}
 
     private void update_scores() {
         Intent service_start = new Intent(getActivity(), myFetchService.class);
@@ -44,7 +43,7 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
                              final Bundle savedInstanceState) {
         update_scores();
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        final ListView score_list = (ListView) rootView.findViewById(R.id.scores_list);
+        ListView score_list = (ListView) rootView.findViewById(R.id.scores_list);
 
         mAdapter = new scoresAdapter(getActivity(), null, 0);
 
@@ -69,13 +68,14 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
         tv = (TextView) rootView.findViewById(R.id.tv_nothing_found);
 
 
+
+
         return rootView;
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return new CursorLoader(getActivity(), DatabaseContract.scores_table.buildScoreWithDate(),
-                null, null, fragmentdate, null);
+        return new CursorLoader(getActivity(), DatabaseContract.scores_table.buildScoreWithDate(), null, null, fragmentdate, null);
     }
 
     @Override
@@ -96,13 +96,17 @@ public class MainScreenFragment extends Fragment implements LoaderManager.Loader
             i++;
             cursor.moveToNext();
         }
-        //Log.v(FetchScoreTask.LOG_TAG,"Loader query: " + String.valueOf(i));
+//        Log.v("REGI","Loader query: " + String.valueOf(i));
         mAdapter.swapCursor(cursor);
-        //mAdapter.notifyDataSetChanged();
+//        mAdapter.notifyDataSetChanged();
 
-        Log.wtf("regi",">>" + cursor.getCount());
-
+        if(mAdapter.getCount() > 0){
+            tv.setVisibility(View.GONE);
+        }else{
+            tv.setVisibility(View.VISIBLE);
+        }
     }
+
 
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader) {

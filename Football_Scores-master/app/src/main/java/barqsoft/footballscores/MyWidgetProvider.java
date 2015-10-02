@@ -1,27 +1,18 @@
 package barqsoft.footballscores;
 
-import java.util.Random;
-
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.widget.RemoteViews;
 
 import android.annotation.SuppressLint;
-import android.appwidget.AppWidgetManager;
-import android.appwidget.AppWidgetProvider;
-import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
-import android.widget.RemoteViews;
 import android.widget.Toast;
 
 
-public class MyWidgetProvider extends AppWidgetProvider {
+public class MyWidgetProvider extends AppWidgetProvider{
 
     public static final String ACTION_TOAST = "com.dharmangsoni.widgets.ACTION_TOAST";
     public static final String EXTRA_STRING = "com.dharmangsoni.widgets.EXTRA_STRING";
@@ -54,8 +45,7 @@ public class MyWidgetProvider extends AppWidgetProvider {
     private RemoteViews initViews(Context context,
                                   AppWidgetManager widgetManager, int widgetId) {
 
-        RemoteViews mView = new RemoteViews(context.getPackageName(),
-                R.layout.widget_layout);
+        RemoteViews mView = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
 
         Intent intent = new Intent(context, WidgetService.class);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
