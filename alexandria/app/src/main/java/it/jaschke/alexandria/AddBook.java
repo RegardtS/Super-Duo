@@ -1,9 +1,13 @@
 package it.jaschke.alexandria;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -20,6 +24,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import it.jaschke.alexandria.CameraPreview.CameraPreview;
+import it.jaschke.alexandria.CameraPreview.CameraSourcePreview;
 import it.jaschke.alexandria.data.AlexandriaContract;
 import it.jaschke.alexandria.services.BookService;
 import it.jaschke.alexandria.services.DownloadImage;
@@ -30,22 +36,27 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
     private EditText ean;
     private final int LOADER_ID = 1;
     private View rootView;
-    private final String EAN_CONTENT="eanContent";
+    private final String EAN_CONTENT = "eanContent";
     private static final String SCAN_FORMAT = "scanFormat";
     private static final String SCAN_CONTENTS = "scanContents";
 
     private String mScanFormat = "Format:";
     private String mScanContents = "Contents:";
 
+//      examle isbn numbers for testing
+//    9780439358071
+//            9780545162074
+//            9780545790352
+//            9780323079334
+//            9781608876143
 
 
-    public AddBook(){
-    }
+    public AddBook() {}
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if(ean!=null) {
+        if (ean != null) {
             outState.putString(EAN_CONTENT, ean.getText().toString());
         }
     }
@@ -56,36 +67,48 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         rootView = inflater.inflate(R.layout.fragment_add_book, container, false);
         ean = (EditText) rootView.findViewById(R.id.ean);
 
-        ean.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                //no need
-            }
+        if(isNetworkAvailable()){
+            ean.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                //no need
-            }
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
-            @Override
-            public void afterTextChanged(Editable s) {
-                String ean =s.toString();
-                //catch isbn10 numbers
-                if(ean.length()==10 && !ean.startsWith("978")){
-                    ean="978"+ean;
-                }
-                if(ean.length()<13){
-                    clearFields();
-                    return;
-                }
+                @Override
+                public void afterTextChanged(Editable s) {
+                    String ean = s.toString();
+                    //catch isbn10 numbers
+                    if (ean.length() == 10 && !ean.startsWith("978")) {
+                        ean = "978" + ean;
+                    }
+                    if (ean.length() < 13) {
+                        clearFields();
+                        return;
+                    }
                     //Once we have an ISBN, start a book intent
-                Intent bookIntent = new Intent(getActivity(), BookService.class);
-                bookIntent.putExtra(BookService.EAN, ean);
-                bookIntent.setAction(BookService.FETCH_BOOK);
-                getActivity().startService(bookIntent);
-                AddBook.this.restartLoader();
-            }
-        });
+                    Intent bookIntent = new Intent(getActivity(), BookService.class);
+                    bookIntent.putExtra(BookService.EAN, ean);
+                    bookIntent.setAction(BookService.FETCH_BOOK);
+                    getActivity().startService(bookIntent);
+                    AddBook.this.restartLoader();
+                }
+            });
+        }else{
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("This feature requires internet")
+                    .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {}
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {}
+                    });
+            builder.show();
+
+        }
+
+
+
 
         rootView.findViewById(R.id.scan_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,6 +125,11 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
 
                 Toast toast = Toast.makeText(context, text, duration);
                 toast.show();
+
+                Intent x = new Intent(getContext(), CameraActivity.class);
+                startActivity(x);
+
+
 
             }
         });
@@ -124,7 +152,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
             }
         });
 
-        if(savedInstanceState!=null){
+        if (savedInstanceState != null) {
             ean.setText(savedInstanceState.getString(EAN_CONTENT));
             ean.setHint("");
         }
@@ -132,18 +160,18 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         return rootView;
     }
 
-    private void restartLoader(){
+    private void restartLoader() {
         getLoaderManager().restartLoader(LOADER_ID, null, this);
     }
 
     @Override
     public android.support.v4.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if(ean.getText().length()==0){
+        if (ean.getText().length() == 0) {
             return null;
         }
-        String eanStr= ean.getText().toString();
-        if(eanStr.length()==10 && !eanStr.startsWith("978")){
-            eanStr="978"+eanStr;
+        String eanStr = ean.getText().toString();
+        if (eanStr.length() == 10 && !eanStr.startsWith("978")) {
+            eanStr = "978" + eanStr;
         }
         return new CursorLoader(
                 getActivity(),
@@ -170,9 +198,9 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         String authors = data.getString(data.getColumnIndex(AlexandriaContract.AuthorEntry.AUTHOR));
         String[] authorsArr = authors.split(",");
         ((TextView) rootView.findViewById(R.id.authors)).setLines(authorsArr.length);
-        ((TextView) rootView.findViewById(R.id.authors)).setText(authors.replace(",","\n"));
+        ((TextView) rootView.findViewById(R.id.authors)).setText(authors.replace(",", "\n"));
         String imgUrl = data.getString(data.getColumnIndex(AlexandriaContract.BookEntry.IMAGE_URL));
-        if(Patterns.WEB_URL.matcher(imgUrl).matches()){
+        if (Patterns.WEB_URL.matcher(imgUrl).matches()) {
             new DownloadImage((ImageView) rootView.findViewById(R.id.bookCover)).execute(imgUrl);
             rootView.findViewById(R.id.bookCover).setVisibility(View.VISIBLE);
         }
@@ -189,7 +217,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
 
     }
 
-    private void clearFields(){
+    private void clearFields() {
         ((TextView) rootView.findViewById(R.id.bookTitle)).setText("");
         ((TextView) rootView.findViewById(R.id.bookSubTitle)).setText("");
         ((TextView) rootView.findViewById(R.id.authors)).setText("");
@@ -203,5 +231,10 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         activity.setTitle(R.string.scan);
+    }
+
+    public boolean isNetworkAvailable() {
+        final ConnectivityManager connectivityManager = ((ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
     }
 }
