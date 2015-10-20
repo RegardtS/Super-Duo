@@ -92,10 +92,6 @@ public class CameraActivity extends AppCompatActivity {
             }
         };
 
-//        Snackbar.make(mGraphicOverlay, R.string.permission_camera_rationale,
-//                Snackbar.LENGTH_INDEFINITE)
-//                .setAction(R.string.ok, listener)
-//                .show();
     }
 
 
@@ -121,10 +117,9 @@ public class CameraActivity extends AppCompatActivity {
 
 
 
-
         mCameraSource = new CameraSource.Builder(context, barcodeDetector)
                 .setFacing(CameraSource.CAMERA_FACING_BACK)
-                .setRequestedPreviewSize(1600, 1024)
+                .setRequestedPreviewSize(640, 480)
                 .setRequestedFps(15.0f)
                 .build();
 
@@ -146,11 +141,11 @@ public class CameraActivity extends AppCompatActivity {
     class MyBarcodeTracker extends Tracker<Barcode> {
         @Override
         public void onUpdate(Detector.Detections<Barcode> detectionResults, Barcode barcode) {
-            Log.wtf("regi","Value displayValue == " + barcode.displayValue);
-            Log.wtf("regi","Value rawValue == " + barcode.rawValue);
-            Log.wtf("regi"," == ");
 
-
+            Intent result = new Intent();
+            result.putExtra("text", barcode.displayValue);
+            setResult(Activity.RESULT_OK, result);
+            finish();
         }
     }
 
