@@ -1,60 +1,57 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-     >
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#bbDEDFDE"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/widgetLayoutMain"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="32dp"
             android:background="#aaDEDFDE"
+            android:gravity="center"
             android:orientation="horizontal"
+            android:paddingEnd="5dp"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
-            android:paddingEnd="5dp"
             android:paddingStart="5dp">
 
-            <ImageView
-                android:id="@+id/widgetImgLauncher"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/ic_launcher"
-                />
+            <TextView
+                android:id="@+id/txt_back"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:gravity="center"
+                android:text="&lt;"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/blue01"
+                android:textStyle="bold" />
 
-            <LinearLayout
-                android:id="@+id/widgetTopBar"
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/txt_title"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:paddingBottom="4dp"
-                android:paddingLeft="8dp"
-                android:paddingTop="4dp"
-                android:paddingStart="8dp">
+                android:text="@string/app_name"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#4B4B4D"
+                android:textStyle="bold" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/app_name"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="#4B4B4D"
-                    android:textStyle="bold" />
+            <TextView
+                android:id="@+id/txt_next"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:gravity="center"
+                android:text="&gt;"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/blue01"
+                android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/txvWidgetTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="dharmangsoni.blogspot.in"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="#4B4B4D" />
-            </LinearLayout>
+
         </LinearLayout>
 
         <TextView
@@ -65,8 +62,7 @@
         <ListView
             android:id="@+id/widgetCollectionList"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-        </ListView>
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
 </FrameLayout>

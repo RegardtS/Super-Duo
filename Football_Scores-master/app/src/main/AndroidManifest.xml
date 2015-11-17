@@ -39,7 +39,7 @@
         <receiver
             android:icon="@drawable/ic_launcher"
             android:label="Example Widget"
-            android:name=".MyWidgetProvider" >
+            android:name=".widget.WidgetProvider" >
             <intent-filter >
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -50,7 +50,7 @@
         </receiver>
 
         <service
-            android:name=".WidgetService"
+            android:name=".widget.WidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
     </application>
