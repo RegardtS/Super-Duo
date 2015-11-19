@@ -47,13 +47,11 @@ public class WidgetProvider extends AppWidgetProvider{
 
 
             final PendingIntent onClickPendingIntent = PendingIntent.getBroadcast(context, 0, onItemClick, PendingIntent.FLAG_UPDATE_CURRENT);
-            mView.setPendingIntentTemplate(R.id.widgetCollectionList, onClickPendingIntent);
 
 
 
 
 
-            updateScores();
 
             RemoteViews remoteViews;
             ComponentName watchWidget;
@@ -63,12 +61,15 @@ public class WidgetProvider extends AppWidgetProvider{
 
             remoteViews.setOnClickPendingIntent(R.id.txt_next, getPendingSelfIntent(context, ACTION_NEXT));
             remoteViews.setOnClickPendingIntent(R.id.txt_back, getPendingSelfIntent(context, ACTION_BACK));
+
+            remoteViews.setPendingIntentTemplate(R.id.widgetCollectionList, onClickPendingIntent);
+
             appWidgetManager.updateAppWidget(watchWidget, remoteViews);
 
 
 
 
-
+            Log.wtf("regi","in the loop");
 
             appWidgetManager.updateAppWidget(widgetId, mView);
         }
@@ -78,43 +79,6 @@ public class WidgetProvider extends AppWidgetProvider{
 
     }
 
-    private void updateScores(){
-
-        int COL_HOME = 3;
-        int COL_AWAY = 4;
-        int COL_HOME_GOALS = 6;
-        int COL_AWAY_GOALS = 7;
-        int COL_DATE = 1;
-        int COL_LEAGUE = 5;
-        int COL_MATCHDAY = 9;
-        int COL_ID = 8;
-        int COL_MATCHTIME = 2;
-        double detail_match_id = 0;
-        String FOOTBALL_SCORES_HASHTAG = "#Football_Scores";
-
-
-        String[] fragmentdate = new String[1];
-        fragmentdate[0] = "2015-11-06";
-
-
-        Cursor cursor = context.getContentResolver().query(DatabaseContract.scores_table.buildScoreWithDate(), null, null, fragmentdate, null);
-        if (cursor != null && cursor.getCount() > 0) {
-
-            cursor.moveToFirst();
-
-            while (cursor.moveToNext()) {
-                Log.wtf("regi","COL_HOME "+cursor.getString(COL_HOME));
-                Log.wtf("regi", "COL_AWAY " + cursor.getString(COL_AWAY));
-                Log.wtf("regi", "COL_MATCHTIME " + cursor.getString(COL_MATCHTIME));
-                Log.wtf("regi", "getScores " + Utilies.getScores(cursor.getInt(COL_HOME_GOALS), cursor.getInt(COL_AWAY_GOALS)));
-                Log.wtf("regi", "getDouble " + cursor.getDouble(COL_ID));
-                Log.wtf("regi","nah ");
-            }
-
-            cursor.close();
-
-        }
-    }
 
     protected PendingIntent getPendingSelfIntent(Context context, String action) {
         Intent intent = new Intent(context, getClass());
@@ -142,14 +106,14 @@ public class WidgetProvider extends AppWidgetProvider{
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.wtf("regi","onReceive");
         this.context = context;
         if (intent.getAction().equals(ACTION_TOAST)) {
             String item = intent.getExtras().getString(EXTRA_STRING);
             Toast.makeText(context, item, Toast.LENGTH_LONG).show();
-            Log.wtf("regi", "ACTION_TOAST");
+//            Log.wtf("regi", "ACTION_TOAST");
         }
         if (ACTION_BACK.equals(intent.getAction()) || intent.getAction().equals(ACTION_NEXT)) {
+
 
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 
@@ -161,7 +125,16 @@ public class WidgetProvider extends AppWidgetProvider{
 
             remoteViews.setTextViewText(R.id.txt_title, ""+intent.getAction());
 
+
+//            remoteViews.
+
+
             appWidgetManager.updateAppWidget(watchWidget, remoteViews);
+
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetManager.getAppWidgetIds(watchWidget),R.id.widgetCollectionList);
+
+
+
 
         }
         super.onReceive(context, intent);
