@@ -1,5 +1,13 @@
 package barqsoft.footballscores;
 
+import android.util.Log;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 /**
  * Created by yehya khaled on 3/3/2015.
  */
@@ -83,4 +91,37 @@ public class Utilies {
                 return R.drawable.no_icon;
         }
     }
+
+    public static String getFormattedDate(){
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        //get current date time with Date()
+        Date date = new Date();
+        System.out.println(dateFormat.format(date));
+
+        //get current date time with Calendar()
+        Calendar cal = Calendar.getInstance();
+        return dateFormat.format(cal.getTime());
+    }
+
+    public static String getNextDay(String stringDate){
+        //String dt = "2008-01-01";  // Start date
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar c = Calendar.getInstance();
+
+        try {
+            c.setTime(sdf.parse(stringDate));
+        }catch (ParseException e){
+            Log.wtf("regi","failed");
+        }
+
+
+        c.add(Calendar.DATE, 1);  // number of days to add
+        stringDate = sdf.format(c.getTime());
+
+        return stringDate;
+    }
+
+
+
+
 }

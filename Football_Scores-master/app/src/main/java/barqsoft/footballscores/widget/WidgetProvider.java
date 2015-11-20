@@ -6,7 +6,9 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -48,11 +50,6 @@ public class WidgetProvider extends AppWidgetProvider{
 
             final PendingIntent onClickPendingIntent = PendingIntent.getBroadcast(context, 0, onItemClick, PendingIntent.FLAG_UPDATE_CURRENT);
 
-
-
-
-
-
             RemoteViews remoteViews;
             ComponentName watchWidget;
 
@@ -66,10 +63,6 @@ public class WidgetProvider extends AppWidgetProvider{
 
             appWidgetManager.updateAppWidget(watchWidget, remoteViews);
 
-
-
-
-            Log.wtf("regi","in the loop");
 
             appWidgetManager.updateAppWidget(widgetId, mView);
         }
@@ -95,10 +88,8 @@ public class WidgetProvider extends AppWidgetProvider{
 
         Intent intent = new Intent(context, WidgetService.class);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
-        intent.putExtra("tester", "testedsasadadsadsadsr");
 
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
-//        mView.setRemoteAdapter(widgetId, R.id.widgetCollectionList, intent);
         mView.setRemoteAdapter(R.id.widgetCollectionList,intent);
 
         return mView;
@@ -110,7 +101,6 @@ public class WidgetProvider extends AppWidgetProvider{
         if (intent.getAction().equals(ACTION_TOAST)) {
             String item = intent.getExtras().getString(EXTRA_STRING);
             Toast.makeText(context, item, Toast.LENGTH_LONG).show();
-//            Log.wtf("regi", "ACTION_TOAST");
         }
         if (ACTION_BACK.equals(intent.getAction()) || intent.getAction().equals(ACTION_NEXT)) {
 
@@ -123,19 +113,41 @@ public class WidgetProvider extends AppWidgetProvider{
             remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
             watchWidget = new ComponentName(context, WidgetProvider.class);
 
-            remoteViews.setTextViewText(R.id.txt_title, ""+intent.getAction());
+//            remoteViews.setTextViewText(R.id.txt_title, "" + intent.getAction());
 
 
-//            remoteViews.
+//
+//            Log.wtf("regi","before temp == " + temp);
+//            if(ACTION_BACK.equals(intent.getAction())){
+//                Log.wtf("regi","-- temp == " + temp);
+//                temp--;
+//            }else{
+//                Log.wtf("regi","++ temp == " + temp);
+//                temp++;
+//            }
+//            Log.wtf("regi","temp == " + temp);
+
+            SharedPreferences prefs = context.getSharedPreferences("com.example.app", Context.MODE_PRIVATE);
+            String tempDate = prefs.getString("temp", "");
+            if (TextUtils.isEmpty(tempDate)){
+                tempDate = Utilies.getFormattedDate();
+            }
+
+
+            remoteViews.setTextViewText(R.id.txt_title, "" + tempDate);
+
+            Log.wtf("regi", "tempDate == " + tempDate);
+            tempDate = Utilies.getNextDay(tempDate);
+            Log.wtf("regi", "tempDate ++ " + tempDate);
+
+
+            prefs.edit().putString("temp", tempDate).apply();
+
 
 
             appWidgetManager.updateAppWidget(watchWidget, remoteViews);
 
-            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetManager.getAppWidgetIds(watchWidget),R.id.widgetCollectionList);
-
-
-
-
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetManager.getAppWidgetIds(watchWidget), R.id.widgetCollectionList);
         }
         super.onReceive(context, intent);
     }
