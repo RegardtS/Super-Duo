@@ -96,15 +96,14 @@ public class Utilies {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         //get current date time with Date()
         Date date = new Date();
-        System.out.println(dateFormat.format(date));
+        dateFormat.format(date);
 
         //get current date time with Calendar()
         Calendar cal = Calendar.getInstance();
         return dateFormat.format(cal.getTime());
     }
 
-    public static String getNextDay(String stringDate){
-        //String dt = "2008-01-01";  // Start date
+    public static String modifyDate(String stringDate, boolean addDay){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Calendar c = Calendar.getInstance();
 
@@ -114,8 +113,12 @@ public class Utilies {
             Log.wtf("regi","failed");
         }
 
+        if(addDay){
+            c.add(Calendar.DATE, 1);
+        }else{
+            c.add(Calendar.DATE, -1);
+        }
 
-        c.add(Calendar.DATE, 1);  // number of days to add
         stringDate = sdf.format(c.getTime());
 
         return stringDate;

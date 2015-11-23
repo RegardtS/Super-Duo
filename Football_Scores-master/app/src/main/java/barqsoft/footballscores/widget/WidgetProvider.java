@@ -7,7 +7,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -16,16 +15,11 @@ import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.widget.Toast;
 
-import barqsoft.footballscores.DatabaseContract;
 import barqsoft.footballscores.R;
 import barqsoft.footballscores.Utilies;
 
 
 public class WidgetProvider extends AppWidgetProvider{
-
-    public static final String ACTION_TOAST = "com.dharmangsoni.widgets.ACTION_TOAST";
-    public static final String EXTRA_STRING = "com.dharmangsoni.widgets.EXTRA_STRING";
-
 
 
     private static final String ACTION_BACK = "ACTION_BACK";
@@ -42,14 +36,6 @@ public class WidgetProvider extends AppWidgetProvider{
         for (int widgetId : appWidgetIds) {
             RemoteViews mView = initViews(context, appWidgetManager, widgetId);
 
-            // Adding collection list item handler
-            final Intent onItemClick = new Intent(context, WidgetProvider.class);
-            onItemClick.setAction(ACTION_TOAST);
-            onItemClick.setData(Uri.parse(onItemClick.toUri(Intent.URI_INTENT_SCHEME)));
-
-
-            final PendingIntent onClickPendingIntent = PendingIntent.getBroadcast(context, 0, onItemClick, PendingIntent.FLAG_UPDATE_CURRENT);
-
             RemoteViews remoteViews;
             ComponentName watchWidget;
 
@@ -59,11 +45,7 @@ public class WidgetProvider extends AppWidgetProvider{
             remoteViews.setOnClickPendingIntent(R.id.txt_next, getPendingSelfIntent(context, ACTION_NEXT));
             remoteViews.setOnClickPendingIntent(R.id.txt_back, getPendingSelfIntent(context, ACTION_BACK));
 
-            remoteViews.setPendingIntentTemplate(R.id.widgetCollectionList, onClickPendingIntent);
-
             appWidgetManager.updateAppWidget(watchWidget, remoteViews);
-
-
             appWidgetManager.updateAppWidget(widgetId, mView);
         }
         super.onUpdate(context, appWidgetManager, appWidgetIds);
@@ -98,10 +80,6 @@ public class WidgetProvider extends AppWidgetProvider{
     @Override
     public void onReceive(Context context, Intent intent) {
         this.context = context;
-        if (intent.getAction().equals(ACTION_TOAST)) {
-            String item = intent.getExtras().getString(EXTRA_STRING);
-            Toast.makeText(context, item, Toast.LENGTH_LONG).show();
-        }
         if (ACTION_BACK.equals(intent.getAction()) || intent.getAction().equals(ACTION_NEXT)) {
 
 
@@ -113,19 +91,6 @@ public class WidgetProvider extends AppWidgetProvider{
             remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
             watchWidget = new ComponentName(context, WidgetProvider.class);
 
-//            remoteViews.setTextViewText(R.id.txt_title, "" + intent.getAction());
-
-
-//
-//            Log.wtf("regi","before temp == " + temp);
-//            if(ACTION_BACK.equals(intent.getAction())){
-//                Log.wtf("regi","-- temp == " + temp);
-//                temp--;
-//            }else{
-//                Log.wtf("regi","++ temp == " + temp);
-//                temp++;
-//            }
-//            Log.wtf("regi","temp == " + temp);
 
             SharedPreferences prefs = context.getSharedPreferences("com.example.app", Context.MODE_PRIVATE);
             String tempDate = prefs.getString("temp", "");
@@ -133,12 +98,9 @@ public class WidgetProvider extends AppWidgetProvider{
                 tempDate = Utilies.getFormattedDate();
             }
 
+            tempDate = Utilies.modifyDate(tempDate,intent.getAction().equals(ACTION_NEXT));
 
             remoteViews.setTextViewText(R.id.txt_title, "" + tempDate);
-
-            Log.wtf("regi", "tempDate == " + tempDate);
-            tempDate = Utilies.getNextDay(tempDate);
-            Log.wtf("regi", "tempDate ++ " + tempDate);
 
 
             prefs.edit().putString("temp", tempDate).apply();

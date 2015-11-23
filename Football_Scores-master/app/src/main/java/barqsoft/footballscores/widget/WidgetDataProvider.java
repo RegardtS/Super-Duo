@@ -35,17 +35,10 @@ public class WidgetDataProvider implements RemoteViewsFactory{
     Context mContext = null;
 
     public WidgetDataProvider(Context context, Intent intent) {
-
         mContext = context;
-
-
-
-//        String meh = intent.getStringExtra("tester");
-        //Log.wtf("regi","meh == " + meh);
-
     }
 
-    private void updateScores(String name){
+    private void updateScores(){
 
         SharedPreferences prefs = mContext.getSharedPreferences("com.example.app", Context.MODE_PRIVATE);
 
@@ -55,21 +48,9 @@ public class WidgetDataProvider implements RemoteViewsFactory{
             tempDate = Utilies.getFormattedDate();
         }
 
-        Log.wtf("regi","tempDate is "+tempDate);
-
-
-
         int COL_HOME = 3;
         int COL_AWAY = 4;
-        int COL_HOME_GOALS = 6;
-        int COL_AWAY_GOALS = 7;
-        int COL_DATE = 1;
-        int COL_LEAGUE = 5;
-        int COL_MATCHDAY = 9;
-        int COL_ID = 8;
         int COL_MATCHTIME = 2;
-        double detail_match_id = 0;
-        String FOOTBALL_SCORES_HASHTAG = "#Football_Scores";
 
 
         String[] fragmentdate = new String[1];
@@ -77,24 +58,17 @@ public class WidgetDataProvider implements RemoteViewsFactory{
 
 
         Cursor cursor = mContext.getContentResolver().query(DatabaseContract.scores_table.buildScoreWithDate(), null, null, fragmentdate, null);
+        mCollections.clear();
         if (cursor != null && cursor.getCount() > 0) {
-
             cursor.moveToFirst();
-            mCollections.clear();
-
              do{
-                mCollections.add(cursor.getString(COL_HOME) + " : " + cursor.getString(COL_AWAY));
-                Log.wtf("regi",cursor.getString(COL_HOME) + " : " + cursor.getString(COL_AWAY));
-//                Log.wtf("regi","COL_HOME "+cursor.getString(COL_HOME));
-//                Log.wtf("regi", "COL_AWAY " + cursor.getString(COL_AWAY));
-//                Log.wtf("regi", "COL_MATCHTIME " + cursor.getString(COL_MATCHTIME));
-//                Log.wtf("regi", "getScores " + Utilies.getScores(cursor.getInt(COL_HOME_GOALS), cursor.getInt(COL_AWAY_GOALS)));
-//                Log.wtf("regi", "getDouble " + cursor.getDouble(COL_ID));
-//                Log.wtf("regi","nah ");
+                mCollections.add(cursor.getString(COL_HOME) + " vs " + cursor.getString(COL_AWAY) + " @ " + cursor.getString(COL_MATCHTIME));
             }while (cursor.moveToNext());
 
             cursor.close();
 
+        }else {
+            mCollections.add(mContext.getString(R.string.no_matches_found_description));
         }
     }
 
@@ -119,15 +93,6 @@ public class WidgetDataProvider implements RemoteViewsFactory{
         mView.setTextViewText(android.R.id.text1, String.valueOf(mCollections.get(position)));
         mView.setTextColor(android.R.id.text1, Color.BLACK);
 
-
-        final Intent fillInIntent = new Intent();
-        fillInIntent.setAction(WidgetProvider.ACTION_TOAST);
-
-        final Bundle bundle = new Bundle();
-        bundle.putString(WidgetProvider.EXTRA_STRING, "" + mCollections.get(position));
-
-        fillInIntent.putExtras(bundle);
-        mView.setOnClickFillInIntent(android.R.id.text1, fillInIntent);
         return mView;
     }
 
@@ -138,26 +103,11 @@ public class WidgetDataProvider implements RemoteViewsFactory{
     public boolean hasStableIds() {return true;}
 
     @Override
-    public void onCreate() {
-        //initData();
-        Log.wtf("regi","onCreate");
-    }
+    public void onCreate() {}
 
     @Override
     public void onDataSetChanged() {
-        Log.wtf("regi", "onDataSetChanged");
-        updateScores("2015-11-07");
-    }
-
-    private void initData() {
-        Log.wtf("regi","initData");
-        updateScores("2015-11-06");
-        //
-
-//        //mCollections.clear();
-//        for (int i = 1; i <= 10; i++) {
-//            mCollections.add("ListView item " + i);
-//        }
+        updateScores();
     }
 
     @Override

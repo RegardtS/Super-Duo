@@ -121,18 +121,6 @@ public class myFetchService extends IntentService {
 
     private void processJSONdata(String JSONdata, Context mContext, boolean isReal) {
 
-
-//        int maxLogSize = 1000;
-//        for(int i = 0; i <= JSONdata.length() / maxLogSize; i++) {
-//            int start = i * maxLogSize;
-//            int end = (i+1) * maxLogSize;
-//            end = end > JSONdata.length() ? JSONdata.length() : end;
-//            Log.wtf("Regi", JSONdata.substring(start, end));
-//        }
-//        Log.wtf("Regi", "-------");
-
-
-
         //JSON data
         // This set of league codes is for the 2015/2016 season. In fall of 2016, they will need to
         // be updated. Feel free to use the codes
